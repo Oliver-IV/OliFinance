@@ -9,20 +9,27 @@ import java.util.List;
 @Table(name = "usuario")
 public class Usuario {
 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_usuario")
+    @Column(name = "id_usuario", unique = true, nullable = false)
     private Long id ;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true, nullable = false)
     private String email ;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password ;
+
+    @Column(name = "cartera")
+    private Float cartera ;
 
     @OneToMany(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Gasto> gastos = new ArrayList<>();
 
-    @ManyToMany
+    @OneToMany(mappedBy = "usuario", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<Gasto> ingresos = new ArrayList<>();
+
+    @ManyToMany(cascade = {CascadeType.PERSIST})
     @JoinTable(
             name = "user_categories",
             joinColumns = @JoinColumn(name = "id_usuario"),
@@ -34,11 +41,30 @@ public class Usuario {
 
     }
 
+    public Usuario(Float cartera, List<Categoria> categorias, String email, List<Gasto> gastos, Long id, List<Gasto> ingresos, String password) {
+        this.cartera = cartera;
+        this.categorias = categorias;
+        this.email = email;
+        this.gastos = gastos;
+        this.id = id;
+        this.ingresos = ingresos;
+        this.password = password;
+    }
+
     public Usuario(Long id, String email, String password, List<Gasto> gastos, List<Categoria> categorias) {
         this.categorias = categorias;
         this.email = email;
         this.gastos = gastos;
         this.id = id;
+        this.password = password;
+    }
+
+    public Usuario(Float cartera, List<Categoria> categorias, String email, List<Gasto> gastos, List<Gasto> ingresos, String password) {
+        this.cartera = cartera;
+        this.categorias = categorias;
+        this.email = email;
+        this.gastos = gastos;
+        this.ingresos = ingresos;
         this.password = password;
     }
 
@@ -86,5 +112,21 @@ public class Usuario {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Float getCartera() {
+        return cartera;
+    }
+
+    public void setCartera(Float cartera) {
+        this.cartera = cartera;
+    }
+
+    public List<Gasto> getIngresos() {
+        return ingresos;
+    }
+
+    public void setIngresos(List<Gasto> ingresos) {
+        this.ingresos = ingresos;
     }
 }
